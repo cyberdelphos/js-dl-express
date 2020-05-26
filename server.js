@@ -10,7 +10,7 @@ var jwtSecret = 'adiov90423og49pyov8vh24iu';
 var app = express();
 app.use(cors());
 app.use(bodyParser.json());
-app.use(expressJwt({secret: jwtSecret}).unless({path: ['/login']}));
+app.use(expressJwt({secret: jwtSecret}).unless({path: ['/authenticate']}));
 app.use('/downloads', express.static('files'));
 
 app.get('/random-user', function (req, res) {
@@ -19,9 +19,9 @@ app.get('/random-user', function (req, res) {
   res.json(user);
 })
 
-app.post('/login', authenticate, function (req, res) {
+app.post('/authenticate', authenticate, function (req, res) {
   var token = jwt.sign({
-    username: 'hola'
+    username: 'usuario'
   }, jwtSecret);
   res.send({
     token: token,
@@ -33,7 +33,7 @@ app.post('/login', authenticate, function (req, res) {
 });
 
 app.get('/data', function (req, res) {
-  res.send('hola!!!')
+  res.send('Data protected by JWT')
 });
 
 app.listen(3000, function () {
@@ -46,7 +46,7 @@ function authenticate(req, res, next) {
   if(!body.username || !body.password) {
     res.status(400).end('Must provide username or password');
   }
-  if (body.username !== 'hola' || body.password !== 'perro') {
+  if (body.username !== 'usuario' || body.password !== 'password') {
     res.status(401).end('Incorrect user/password');
   }
   next();
